@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Canvas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+        }
+        #controls {
+            margin-bottom: 20px;
+        }
+        canvas {
+            border: 1px solid black;
+            display: block;
+            margin: 0 auto;
+        }
+        .selected {
+            border: 2px solid red;
+        }
+    </style>
+</head>
+<body>
+    <div id="controls">
+        <label for="shape">Selecciona una forma:</label>
+        <select id="shape">
+            <option value="rectangle">Rectángulo</option>
+            <option value="circle">Círculo</option>
+        </select>
+        <button id="clear">Limpiar Canvas</button>
+    </div>
+    <canvas id="canvas" width="800" height="600"></canvas>
+    <script>
+		// Obtener referencias a los elementos
+		const canvas = document.getElementById('canvas');
+		const ctx = canvas.getContext('2d');
+		const shapeSelect = document.getElementById('shape');
+		const clearButton = document.getElementById('clear');
+
+		let currentShape = 'rectangle';
+		let shapes = [];
+		let selectedShapeIndex = null;
+
+		// Manejar la selección de formas
+		shapeSelect.addEventListener('change', (e) => {
+			currentShape = e.target.value;
+		});
+
+		// Manejar el clic en el canvas para dibujar formas
+		canvas.addEventListener('click', (e) => {
+			const rect = canvas.getBoundingClientRect();
+			const x = e.clientX - rect.left;
+			const y = e.clientY - rect.top;
+
+			let shape;
+			if (currentShape === 'rectangle') {
+				shape = { type: 'rectangle', x, y, width: 100, height: 50 };
+			} else if (currentShape === 'circle') {
+				shape = { type: 'circle', x, y, radius: 50 };
+			}
+			shapes.push(shape);
+			drawShapes();
+		});
+
+		// Función para dibujar todas las formas en el canvas
+		function drawShapes() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			shapes.forEach((shape, index) => {
+				ctx.beginPath();
+				if (shape.type === 'rectangle') {
+					ctx.rect(shape.x, shape.y, shape.width, shape.height);
+				} else if (shape.type === 'circle') {
+					ctx.arc(shape.x, shape.y, shape.radius, 0, Math.PI * 2);
+				}
+				ctx.stroke();
+				ctx.fillStyle = 'rgba(0, 100, 255, 0.3)';
+				ctx.fill();
+				ctx.strokeStyle = 'black';
+				ctx.stroke();
+			});
+		}
+
+		// Manejar el botón de limpiar
+		clearButton.addEventListener('click', () => {
+			shapes = [];
+			drawShapes();
+		});
+    </script>
+</body>
+</html>
